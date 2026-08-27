@@ -3,22 +3,27 @@
 The reference to-do app for **Technical Interaction Design**, ITU, Autumn 2026 — built
 live, in the lectures. Your team forks it in week 3.
 
-## One tag per lecture
+## Getting the app from a particular lecture
+
+Every lecture ends with a tag, so you can check out the app exactly as it stood when you
+walked out of the room:
 
 ```bash
 git clone https://github.com/itu-tid/todo-26.git
 cd todo-26
+git checkout week-01
 npm install
 npm run dev
 ```
 
-`git tag` lists what exists so far, and each tag is the app as it stood at the end of that
-lecture:
+`git checkout main` takes you back to the latest, and `git tag` lists every week that
+exists so far. If you switch between tags, run `npm install` again — the dependencies
+change as the course goes on.
 
-```bash
-git checkout week-01     # the app at the end of lecture 1
-git checkout main        # back to the latest
-```
+### What is in week-01
+
+Components, props, `children`, and rendering a list with keys. **Add** is wired up but only
+logs — making it actually add something needs state, which is lecture 2.
 
 The commits inside a week are the live coding as it happened, warts and dead ends
 included. The **tag** is applied afterwards, once it has been tidied — so the commits show
