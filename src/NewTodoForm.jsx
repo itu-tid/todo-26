@@ -4,11 +4,6 @@ import TextInput from "./TextInput.jsx";
 export default function NewTodoForm({ onAdd }) {
   let [task, setTask] = useState("");
 
-  function handleInputChange(event) {
-    let newTaskString = event.target.value;
-    setTask(newTaskString);
-  }
-
   function onButtonClick(event) {
     event.preventDefault();
     onAdd(task);
@@ -18,7 +13,7 @@ export default function NewTodoForm({ onAdd }) {
   return (
     <form onSubmit={onButtonClick}>
       <TextInput input={task} setInput={setTask} />
-      <button type="submit" onClick={onButtonClick}>
+      <button type="submit" disabled={task.length === 0}>
         Add New Task
       </button>
     </form>

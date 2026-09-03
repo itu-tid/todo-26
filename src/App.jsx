@@ -9,7 +9,7 @@ function App() {
 
   return (
     <>
-      <ToDoList firstName={name} todos={annasToDoList} />
+      <ToDoList firstName={name} />
     </>
   );
 }
