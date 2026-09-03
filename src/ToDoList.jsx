@@ -1,8 +1,14 @@
-export default function ToDoList({ firstName, lastName, todos }) {
+import { useState } from "react";
+import NewTodoForm from "./NewTodoForm.jsx";
+
+export default function ToDoList({ firstName }) {
   let h1Style = { color: "deeppink", backgroundColor: "white" };
 
-  function handleAdd(event) {
-    console.log("we should add a new item");
+  let [todos, setTodos] = useState([]);
+
+  function handleAdd(newTask) {
+    let newTodos = [...todos, newTask];
+    setTodos(newTodos);
   }
 
   return (
@@ -14,7 +20,7 @@ export default function ToDoList({ firstName, lastName, todos }) {
         ))}
       </ul>
 
-      <button onClick={handleAdd}>Add New Task</button>
+      <NewTodoForm onAdd={handleAdd} />
     </>
   );
 }
