@@ -5,6 +5,15 @@ import Parse from "parse";
 
 const TodoItem = Parse.Object.extend("TodoItem");
 
+// may the current user change this object? asks its ACL
+function canWrite(parseObject) {
+  const acl = parseObject.getACL();
+  if (!acl) return true; // no ACL at all: everybody may write
+
+  const user = Parse.User.current();
+  return acl.getPublicWriteAccess() || acl.getWriteAccess(user);
+}
+
 export default function ToDoList({ firstName }) {
   let h1Style = { color: "deeppink", backgroundColor: "white" };
 
@@ -27,6 +36,7 @@ export default function ToDoList({ firstName }) {
         id: item.id,
         text: item.get("text"),
         done: item.get("done"),
+        canWrite: canWrite(item),
       });
     }
 
@@ -40,15 +50,23 @@ export default function ToDoList({ firstName }) {
   // newTask is a string
   function handleAdd(newTaskText) {
     // creation of a new row in the table
+
     const newItem = new TodoItem();
     newItem.set("text", newTaskText);
     newItem.set("done", false);
+
+    // prepare the ACL
+    const currentUser = Parse.User.current();
+    const acl = new Parse.ACL(currentUser); // Ada can read and write
+    acl.setPublicReadAccess(true); // everybody can read
+    newItem.setACL(acl);
+
     newItem.save().then(onSuccessfulSave).catch(onError);
 
     function onSuccessfulSave(savedItem) {
       let newTodos = [
         ...todos,
-        { id: savedItem.id, text: newTaskText, done: false },
+        { id: savedItem.id, text: newTaskText, done: false, canWrite: true },
       ];
       setTodos(newTodos);
     }
@@ -87,7 +105,7 @@ export default function ToDoList({ firstName }) {
 
         setTodos(newTodos);
       })
-      .catch(() => console.log("something went wrong "));
+      .catch((error) => alert(error.message));
   }
 
   useEffect(() => {

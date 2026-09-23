@@ -3,6 +3,7 @@ import ToDoList from "./ToDoList.jsx";
 import { useState } from "react";
 
 import Parse from "parse";
+import AuthPage from "./AuthPage.jsx";
 
 // Credentials come from .env.local, which is gitignored.
 // Copy .env.example to .env.local and fill in your own Back4App values.
@@ -19,13 +20,29 @@ Parse.initialize(
 );
 
 function App() {
-  const annasToDoList = ["Call the landlord", "Book the dentist"];
+  const [user, setUser] = useState(Parse.User.current());
 
-  const [name, setName] = useState("Anna");
+  async function handleLogout() {
+    try {
+      await Parse.User.logOut();
+      setUser(null);
+    } catch (error) {
+      alert(error);
+    }
+  }
+
+  function handleAuthenticated(loggedInUser) {
+    setUser(loggedInUser);
+  }
+
+  if (!user) {
+    return <AuthPage onAuthenticated={handleAuthenticated} />;
+  }
 
   return (
     <>
-      <ToDoList firstName={name} />
+      <ToDoList firstName={user.get("username")} />
+      <button onClick={handleLogout}>Logout</button>
     </>
   );
 }

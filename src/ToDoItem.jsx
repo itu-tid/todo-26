@@ -4,17 +4,20 @@ export default function ToDoItem({ elem, onDelete, onChange }) {
       <input
         type="checkbox"
         checked={elem.done}
+        disabled={!elem.canWrite}
         onChange={() => onChange(elem.id)}
       />
       {elem.text}
-      <button
-        type="button"
-        onClick={() => {
-          onDelete(elem.id);
-        }}
-      >
-        Delete
-      </button>
+      {elem.canWrite && (
+        <button
+          type="button"
+          onClick={() => {
+            onDelete(elem.id);
+          }}
+        >
+          Delete
+        </button>
+      )}
     </li>
   );
 }
