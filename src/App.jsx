@@ -1,6 +1,6 @@
 import "./App.css";
 import ToDoList from "./ToDoList.jsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Parse from "parse";
 import AuthPage from "./AuthPage.jsx";
@@ -21,6 +21,27 @@ Parse.initialize(
 
 function App() {
   const [user, setUser] = useState(Parse.User.current());
+  const [lists, setLists] = useState([]);
+
+  useEffect(() => {
+    // nobody logged in yet: nothing to load
+    if (!user) return;
+
+    async function loadLists() {
+      // we are creating a query object for objects of type List
+      const List = Parse.Object.extend("List");
+      const query = new Parse.Query(List);
+
+      query.equalTo("owner", Parse.User.current());
+
+      // await
+      const results = await query.find();
+
+      setLists(results);
+    }
+
+    loadLists();
+  }, [user]); // load again whenever somebody else logs in
 
   async function handleLogout() {
     try {
@@ -41,7 +62,10 @@ function App() {
 
   return (
     <>
-      <ToDoList firstName={user.get("username")} />
+      {lists.map((item) => (
+        <ToDoList key={item.id} list={item} />
+      ))}
+
       <button onClick={handleLogout}>Logout</button>
     </>
   );

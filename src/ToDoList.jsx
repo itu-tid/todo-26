@@ -14,7 +14,7 @@ function canWrite(parseObject) {
   return acl.getPublicWriteAccess() || acl.getWriteAccess(user);
 }
 
-export default function ToDoList({ firstName }) {
+export default function ToDoList({ list }) {
   let h1Style = { color: "deeppink", backgroundColor: "white" };
 
   let [todos, setTodos] = useState([]);
@@ -23,7 +23,7 @@ export default function ToDoList({ firstName }) {
     // we are creating a query object for objects of type TodoItem
     const query = new Parse.Query(TodoItem);
 
-    query.equalTo("done", false);
+    query.equalTo("list", list);
     query.ascending("createdAt");
 
     // await
@@ -57,9 +57,12 @@ export default function ToDoList({ firstName }) {
 
     // prepare the ACL
     const currentUser = Parse.User.current();
-    const acl = new Parse.ACL(currentUser); // Ada can read and write
+    const acl = new Parse.ACL(currentUser); // current user can read and write
     acl.setPublicReadAccess(true); // everybody can read
     newItem.setACL(acl);
+
+    // the to-do belongs to the list this component draws
+    newItem.set("list", list);
 
     newItem.save().then(onSuccessfulSave).catch(onError);
 
@@ -114,7 +117,7 @@ export default function ToDoList({ firstName }) {
 
   return (
     <>
-      <h1 style={h1Style}>To Do List for {firstName}</h1>
+      <h1 style={h1Style}>{list.get("name")}</h1>
       {todos.length === 0 ? (
         <>Nothing to do</>
       ) : (
