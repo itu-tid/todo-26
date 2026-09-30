@@ -14,6 +14,13 @@ export default function AuthPage({ onAuthenticated }) {
       user.set("username", username);
       user.set("password", password);
       await user.signUp();
+
+      // others must be able to find me by username, to share with me
+      const acl = new Parse.ACL(user);
+      acl.setPublicReadAccess(true);
+      user.setACL(acl);
+      await user.save();
+
       onAuthenticated(user);
     } catch (err) {
       setError(err.message);

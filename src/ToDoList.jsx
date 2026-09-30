@@ -130,7 +130,7 @@ export default function ToDoList({ list }) {
         </ul>
       )}
 
-      <NewTodoForm onAdd={handleAdd} />
+      {canWrite(list) && <NewTodoForm onAdd={handleAdd} />}
     </>
   );
 }
