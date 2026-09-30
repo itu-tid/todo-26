@@ -55,11 +55,8 @@ export default function ToDoList({ list }) {
     newItem.set("text", newTaskText);
     newItem.set("done", false);
 
-    // prepare the ACL
-    const currentUser = Parse.User.current();
-    const acl = new Parse.ACL(currentUser); // current user can read and write
-    acl.setPublicReadAccess(true); // everybody can read
-    newItem.setACL(acl);
+    // the to-do follows its list: whoever may read the list may read the to-do
+    newItem.setACL(list.getACL());
 
     // the to-do belongs to the list this component draws
     newItem.set("list", list);

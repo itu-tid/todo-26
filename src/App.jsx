@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 
 import Parse from "parse";
 import AuthPage from "./AuthPage.jsx";
+import NewTodoForm from "./NewTodoForm.jsx";
+
+const List = Parse.Object.extend("List");
 
 // Credentials come from .env.local, which is gitignored.
 // Copy .env.example to .env.local and fill in your own Back4App values.
@@ -29,7 +32,6 @@ function App() {
 
     async function loadLists() {
       // we are creating a query object for objects of type List
-      const List = Parse.Object.extend("List");
       const query = new Parse.Query(List);
 
       query.equalTo("owner", Parse.User.current());
@@ -42,6 +44,22 @@ function App() {
 
     loadLists();
   }, [user]); // load again whenever somebody else logs in
+
+  async function handleAddList(name) {
+    const currentUser = Parse.User.current();
+
+    const list = new List();
+    list.set("name", name);
+    list.set("owner", currentUser);
+    list.setACL(new Parse.ACL(currentUser)); // only the owner, for now
+
+    try {
+      const savedList = await list.save();
+      setLists([...lists, savedList]);
+    } catch (error) {
+      alert(error.message);
+    }
+  }
 
   async function handleLogout() {
     try {
@@ -66,6 +84,11 @@ function App() {
         <ToDoList key={item.id} list={item} />
       ))}
 
+      <br />
+      <br />
+      <h3>List Manager</h3>
+      <NewTodoForm onAdd={handleAddList} buttonLabel="New list" />
+      <h3>Account</h3>
       <button onClick={handleLogout}>Logout</button>
     </>
   );
