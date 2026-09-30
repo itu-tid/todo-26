@@ -1,10 +1,11 @@
 import "./App.css";
-import ToDoList from "./ToDoList.jsx";
+import Home from "./Home.jsx";
+import ListPage from "./ListPage.jsx";
+import { Link, Route, Routes } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import Parse from "parse";
 import AuthPage from "./AuthPage.jsx";
-import NewTodoForm from "./NewTodoForm.jsx";
 
 const List = Parse.Object.extend("List");
 const TodoItem = Parse.Object.extend("TodoItem");
@@ -142,37 +143,23 @@ function App() {
   }
 
   return (
-    <>
-      {lists.map((item) => (
-        <div key={item.id}>
-          <ToDoList list={item} />
-          <NewTodoForm
-            onAdd={(username) => handleShare(item, username)}
-            buttonLabel="Share with (username)"
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <Home
+            lists={lists}
+            memberships={memberships}
+            onAddList={handleAddList}
+            onShare={handleShare}
+            onLeave={handleLeave}
+            onLogout={handleLogout}
           />
-        </div>
-      ))}
-
-      {memberships.length > 0 && <h2>Shared with me</h2>}
-      {memberships.map((membership) => (
-        <div key={membership.id}>
-          <ToDoList list={membership.get("list")} />
-          <p>
-            {/* include() leaves the owner out if I may not read that user's row */}
-            Shared by{" "}
-            {membership.get("list").get("owner")?.get("username") ?? "someone"}{" "}
-            <button onClick={() => handleLeave(membership)}>Leave</button>
-          </p>
-        </div>
-      ))}
-
-      <br />
-      <br />
-      <h3>List Manager</h3>
-      <NewTodoForm onAdd={handleAddList} buttonLabel="New list" />
-      <h3>Account</h3>
-      <button onClick={handleLogout}>Logout</button>
-    </>
+        }
+      />
+      <Route path="/lists/:listId" element={<ListPage />} />
+      <Route path="*" element={<Link to="/">No such page</Link>} />
+    </Routes>
   );
 }
 
