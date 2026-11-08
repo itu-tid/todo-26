@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
-import AddForm from "./AddForm.jsx";
+import styled from "styled-components";
+import colors from "../../colors.js";
+import AddForm from "../UI/AddForm.jsx";
+import { Muted } from "../UI/Text.jsx";
 import ToDoItem from "./ToDoItem.jsx";
 import {
   loadTodos,
@@ -7,11 +10,9 @@ import {
   deleteTodo,
   setDone,
   canWrite,
-} from "./services/todoService.js";
+} from "../../services/todoService.js";
 
 export default function ToDoList({ list }) {
-  let h1Style = { color: "deeppink", backgroundColor: "white" };
-
   let [todos, setTodos] = useState([]);
 
   useEffect(() => {
@@ -57,12 +58,12 @@ export default function ToDoList({ list }) {
 
   return (
     <>
-      <h1 style={h1Style}>{list.get("name")}</h1>
+      <Title>{list.get("name")}</Title>
       {todos.length === 0 ? (
-        <>Nothing to do</>
+        <Empty>Nothing to do</Empty>
       ) : (
-        <ul>
-          {todos.map((elem, index) => (
+        <TaskList>
+          {todos.map((elem) => (
             <ToDoItem
               key={elem.id}
               elem={elem}
@@ -70,10 +71,30 @@ export default function ToDoList({ list }) {
               onChange={handleToggle}
             />
           ))}
-        </ul>
+        </TaskList>
       )}
 
-      {canWrite(list) && <AddForm onAdd={handleAdd} />}
+      {canWrite(list) && (
+        <AddForm onAdd={handleAdd} buttonLabel="Add" placeholder="New task" />
+      )}
     </>
   );
 }
+
+const Title = styled.h1`
+  margin: 16px 0 20px;
+  font-size: 28px;
+  font-weight: 700;
+  color: ${colors.accent};
+`;
+
+const Empty = styled(Muted)`
+  margin: 12px 0 20px;
+`;
+
+const TaskList = styled.ul`
+  list-style: none;
+  width: 100%;
+  margin: 0 0 20px;
+  padding: 0;
+`;
