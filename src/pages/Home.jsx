@@ -2,6 +2,8 @@ import Button from "../components/UI/Button.jsx";
 import AddForm from "../components/UI/AddForm.jsx";
 import MyListRow from "../components/MyListRow.jsx";
 import SharedListRow from "../components/SharedListRow.jsx";
+import ActionRow from "../components/UI/ActionRow.jsx";
+import { Muted } from "../components/UI/Text.jsx";
 import styled from "styled-components";
 import colors from "../colors.js";
 
@@ -17,14 +19,14 @@ export default function Home({
 }) {
   return (
     <>
-      <Header>
+      <ActionRow as="header">
         <Title>Lists</Title>
         <Button type="button" $block label="Logout" onClick={onLogout} />
-      </Header>
+      </ActionRow>
 
       <Section>
         <SectionTitle>My lists</SectionTitle>
-        {lists.length === 0 && <Empty>No lists yet.</Empty>}
+        {lists.length === 0 && <Muted>No lists yet.</Muted>}
         {lists.map((list) => (
           <MyListRow
             key={list.id}
@@ -56,18 +58,11 @@ export default function Home({
   );
 }
 
-const Header = styled.header`
-  display: grid;
-  grid-template-columns: 1fr 120px;
-  gap: 8px;
-  align-items: center;
-`;
-
 const Title = styled.h1`
   margin: 0;
   font-size: 24px;
   font-weight: 700;
-  color: rgb(248, 107, 163);
+  color: ${colors.accent};
 `;
 
 const Section = styled.section`
@@ -83,10 +78,5 @@ const SectionTitle = styled.h2`
   font-weight: 700;
   letter-spacing: 1px;
   text-transform: uppercase;
-  color: ${colors.muted};
-`;
-
-const Empty = styled.p`
-  margin: 0;
   color: ${colors.muted};
 `;

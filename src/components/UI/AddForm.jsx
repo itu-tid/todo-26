@@ -1,5 +1,5 @@
 import { useState } from "react";
-import styled from "styled-components";
+import ActionRow from "./ActionRow.jsx";
 import Button from "./Button.jsx";
 import TextInput from "./TextInput.jsx";
 
@@ -13,7 +13,7 @@ export default function AddForm({ onAdd, buttonLabel = "Add", placeholder }) {
   }
 
   return (
-    <FormRow onSubmit={onButtonClick}>
+    <ActionRow as="form" onSubmit={onButtonClick}>
       <TextInput value={task} onChange={setTask} placeholder={placeholder} />
       <Button
         type="submit"
@@ -22,15 +22,6 @@ export default function AddForm({ onAdd, buttonLabel = "Add", placeholder }) {
         label={buttonLabel}
         disabled={task.length === 0}
       />
-    </FormRow>
+    </ActionRow>
   );
 }
-
-const FormRow = styled.form`
-  display: grid;
-  grid-template-columns: 1fr 120px;
-  gap: 8px;
-  align-items: center;
-  width: 100%;
-`;
-

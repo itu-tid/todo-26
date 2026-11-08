@@ -73,7 +73,7 @@ export async function leaveList(membership) {
   await membership.destroy();
 }
 
-// the owner removes the list, its tasks, and every membership on it, if nobody else is on it
+// the owner removes the list, its tasks, and every membership on it
 export async function deleteList(list) {
   const todos = await new Parse.Query(TodoItem).equalTo("list", list).find();
   const members = await new Parse.Query(ListMember)

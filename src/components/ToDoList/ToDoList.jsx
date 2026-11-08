@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import styled from "styled-components";
 import colors from "../../colors.js";
 import AddForm from "../UI/AddForm.jsx";
+import { Muted } from "../UI/Text.jsx";
 import ToDoItem from "./ToDoItem.jsx";
 import {
   loadTodos,
@@ -59,10 +60,10 @@ export default function ToDoList({ list }) {
     <>
       <Title>{list.get("name")}</Title>
       {todos.length === 0 ? (
-        <Muted>Nothing to do</Muted>
+        <Empty>Nothing to do</Empty>
       ) : (
         <TaskList>
-          {todos.map((elem, index) => (
+          {todos.map((elem) => (
             <ToDoItem
               key={elem.id}
               elem={elem}
@@ -87,9 +88,8 @@ const Title = styled.h1`
   color: ${colors.accent};
 `;
 
-const Muted = styled.p`
+const Empty = styled(Muted)`
   margin: 12px 0 20px;
-  color: ${colors.muted};
 `;
 
 const TaskList = styled.ul`

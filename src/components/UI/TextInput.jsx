@@ -3,10 +3,15 @@ import colors from "../../colors.js";
 
 // takes what <input> takes, a value and a way to report a change,
 // but reports the new text rather than the DOM event
-export default function TextInput({ value, onChange, placeholder }) {
+export default function TextInput({
+  value,
+  onChange,
+  placeholder,
+  type = "text",
+}) {
   return (
     <Field
-      type="text"
+      type={type}
       value={value}
       placeholder={placeholder}
       onChange={(event) => onChange(event.target.value)}

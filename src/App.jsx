@@ -1,8 +1,9 @@
 import Home from "./pages/Home.jsx";
 import ListPage from "./pages/ListPage.jsx";
-import { Link, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import styled, { createGlobalStyle } from "styled-components";
 import colors from "./colors.js";
+import TextLink from "./components/UI/TextLink.jsx";
 import { useEffect, useState } from "react";
 
 import AuthPage from "./pages/AuthPage.jsx";
@@ -52,6 +53,7 @@ function App() {
   }
 
   async function handleDeleteList(list) {
+    if (!confirm(`Delete "${list.get("name")}" and all its tasks?`)) return;
     try {
       await deleteList(list);
       setLists(lists.filter((each) => each.id !== list.id));
@@ -113,7 +115,7 @@ function App() {
             }
           />
           <Route path="/lists/:listId" element={<ListPage />} />
-          <Route path="*" element={<MissingLink to="/">No such page</MissingLink>} />
+          <Route path="*" element={<TextLink to="/">No such page</TextLink>} />
         </Routes>
       </Page>
     </>
@@ -153,14 +155,4 @@ const Page = styled.main`
   background: ${colors.white};
   border: 1px solid ${colors.line};
   border-radius: 16px;
-`;
-
-const MissingLink = styled(Link)`
-  color: ${colors.accent};
-  font-weight: 600;
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-  }
 `;

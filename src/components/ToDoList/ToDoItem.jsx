@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import colors from "../../colors.js";
-import Button, { CloseIcon } from "../UI/Button.jsx";
+import { ACTION_WIDTH } from "../UI/ActionRow.jsx";
+import Button from "../UI/Button.jsx";
+import { CloseIcon } from "../UI/icons.jsx";
 
 export default function ToDoItem({ elem, onDelete, onChange }) {
   return (
@@ -30,7 +32,7 @@ export default function ToDoItem({ elem, onDelete, onChange }) {
 
 const Task = styled.li`
   display: grid;
-  grid-template-columns: 24px 1fr 120px;
+  grid-template-columns: 24px 1fr ${ACTION_WIDTH};
   gap: 8px;
   align-items: center;
   width: 100%;
@@ -39,8 +41,6 @@ const Task = styled.li`
 `;
 
 const TaskLabel = styled.span`
-  flex: 1;
   text-decoration: ${(props) => (props.$done ? "line-through" : "none")};
   color: ${(props) => (props.$done ? colors.muted : "inherit")};
 `;
-

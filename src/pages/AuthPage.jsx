@@ -3,6 +3,8 @@ import styled from "styled-components";
 import colors from "../colors.js";
 import { signUp, logIn } from "../services/authService.js";
 import Button from "../components/UI/Button.jsx";
+import TextInput from "../components/UI/TextInput.jsx";
+import { ErrorText } from "../components/UI/Text.jsx";
 
 export default function AuthPage({ onAuthenticated }) {
   const [username, setUsername] = useState("");
@@ -32,31 +34,25 @@ export default function AuthPage({ onAuthenticated }) {
   }
 
   return (
-    <Stack onSubmit={handleSignUp}>
+    <Stack onSubmit={handleLogin}>
       <Title>Login / SignUp</Title>
       {error && <ErrorText>{error}</ErrorText>}
 
-      <Field
-        type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <Field
+      <TextInput placeholder="Username" value={username} onChange={setUsername} />
+      <TextInput
         type="password"
         placeholder="Password"
         value={password}
-        onChange={(e) => setPassword(e.target.value)}
+        onChange={setPassword}
       />
       <Actions>
-        <Button type="submit" $block label="Sign Up" />
         <Button
           type="button"
           $block
-          $primary
-          label="Log In"
-          onClick={handleLogin}
+          label="Sign Up"
+          onClick={handleSignUp}
         />
+        <Button type="submit" $block $primary label="Log In" />
       </Actions>
     </Stack>
   );
@@ -76,22 +72,6 @@ const Title = styled.h1`
   font-weight: 700;
   text-align: center;
   color: ${colors.accent};
-`;
-
-const ErrorText = styled.p`
-  margin: 0;
-  color: ${colors.danger};
-`;
-
-const Field = styled.input`
-  box-sizing: border-box;
-  width: 100%;
-  padding: 8px 10px;
-  border: 1px solid ${colors.border};
-  min-height: 40px;
-  border-radius: 8px;
-  background: ${colors.white};
-  color: inherit;
 `;
 
 const Actions = styled.div`

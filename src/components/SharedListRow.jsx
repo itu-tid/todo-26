@@ -1,7 +1,8 @@
-import { Link } from "react-router-dom";
 import styled from "styled-components";
 import colors from "../colors.js";
+import ActionRow from "./UI/ActionRow.jsx";
 import Button from "./UI/Button.jsx";
+import TextLink from "./UI/TextLink.jsx";
 
 // a list somebody shared with me: its name, its owner, and a way out
 export default function SharedListRow({ membership, onLeave }) {
@@ -10,7 +11,7 @@ export default function SharedListRow({ membership, onLeave }) {
   return (
     <Row>
       <Details>
-        <ListLink to={`/lists/${list.id}`}>{list.get("name")}</ListLink>
+        <TextLink to={`/lists/${list.id}`}>{list.get("name")}</TextLink>
         {/* include() leaves the owner out if I may not read that user's row */}
         <Owner>shared by {list.get("owner")?.get("username") ?? "someone"}</Owner>
       </Details>
@@ -24,12 +25,7 @@ export default function SharedListRow({ membership, onLeave }) {
   );
 }
 
-const Row = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 120px;
-  gap: 8px;
-  align-items: center;
-  width: 100%;
+const Row = styled(ActionRow)`
   padding-bottom: 16px;
   border-bottom: 1px solid ${colors.line};
 `;
@@ -45,14 +41,3 @@ const Owner = styled.span`
   color: ${colors.muted};
   font-size: 14px;
 `;
-
-const ListLink = styled(Link)`
-  color: ${colors.accent};
-  font-weight: 600;
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-  }
-`;
-

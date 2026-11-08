@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import styled from "styled-components";
-import colors from "../colors.js";
+import TextLink from "../components/UI/TextLink.jsx";
+import { ErrorText, Muted } from "../components/UI/Text.jsx";
 import ToDoList from "../components/ToDoList/ToDoList.jsx";
 import { loadList } from "../services/listService.js";
 
@@ -30,9 +31,9 @@ export default function ListPage() {
       <BackLink to="/">← All lists</BackLink>
 
       {error ? (
-        <ErrorText>{error}</ErrorText>
+        <LoadError>{error}</LoadError>
       ) : !list ? (
-        <Muted>Loading…</Muted>
+        <Loading>Loading…</Loading>
       ) : (
         <ToDoList key={list.id} list={list} />
       )}
@@ -40,22 +41,14 @@ export default function ListPage() {
   );
 }
 
-const BackLink = styled(Link)`
-  color: ${colors.accent};
+const BackLink = styled(TextLink)`
   font-weight: 700;
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-  }
 `;
 
-const ErrorText = styled.p`
+const LoadError = styled(ErrorText)`
   margin: 12px 0;
-  color: ${colors.danger};
 `;
 
-const Muted = styled.p`
+const Loading = styled(Muted)`
   margin: 12px 0;
-  color: ${colors.muted};
 `;
