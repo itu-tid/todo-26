@@ -21,14 +21,21 @@ function App() {
   const [user, setUser] = useState(currentUser());
   const [lists, setLists] = useState([]);
   const [memberships, setMemberships] = useState([]);
+  const [loadFailed, setLoadFailed] = useState(false);
 
   useEffect(() => {
     // nobody logged in yet: nothing to load
     if (!user) return;
 
     async function loadLists() {
-      setLists(await loadMyLists());
-      setMemberships(await loadSharedWithMe());
+      try {
+        setLists(await loadMyLists());
+        setMemberships(await loadSharedWithMe());
+        setLoadFailed(false);
+      } catch {
+        // offline, or the server is down: say so, instead of "No lists yet"
+        setLoadFailed(true);
+      }
     }
 
     loadLists();
@@ -106,6 +113,7 @@ function App() {
               <Home
                 lists={lists}
                 memberships={memberships}
+                loadFailed={loadFailed}
                 onAddList={handleAddList}
                 onShare={handleShare}
                 onLeave={handleLeave}
