@@ -6,7 +6,6 @@ import ActionRow from "../components/UI/ActionRow.jsx";
 import { Muted } from "../components/UI/Text.jsx";
 import styled from "styled-components";
 import colors from "../colors.js";
-import { useInstallPrompt } from "../hooks/useInstallPrompt.js";
 
 // the home page: every list, by name, each one a link to its own page
 export default function Home({
@@ -18,15 +17,10 @@ export default function Home({
   onDeleteList,
   onLogout,
 }) {
-  const { canInstall, install } = useInstallPrompt();
-
   return (
     <>
       <ActionRow as="header">
         <Title>Lists</Title>
-        {canInstall && (
-          <Button type="button" $block label="Install" onClick={install} />
-        )}
         <Button type="button" $block label="Logout" onClick={onLogout} />
       </ActionRow>
 
