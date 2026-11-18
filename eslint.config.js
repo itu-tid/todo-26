@@ -21,4 +21,12 @@ export default defineConfig([
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
   },
+  {
+    // Cloud Code runs on Back4App's server: Node, CommonJS, and a global Parse.
+    files: ["backend/**/*.js"],
+    languageOptions: {
+      sourceType: "commonjs",
+      globals: { ...globals.node, Parse: "readonly" },
+    },
+  },
 ]);

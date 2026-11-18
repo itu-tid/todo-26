@@ -13,7 +13,15 @@ export default function ToDoItem({ elem, onDelete, onChange }) {
         disabled={!elem.canWrite}
         onChange={() => onChange(elem.id)}
       />
-      <TaskLabel $done={elem.done}>{elem.text}</TaskLabel>
+      {elem.textDanish ? (
+        <TaskLabel $done={elem.done}>
+          <span lang="da">{elem.textDanish}</span>
+          <Original>{elem.text}</Original>
+        </TaskLabel>
+      ) : (
+        // not translated (yet): an older to-do, or the translation failed
+        <TaskLabel $done={elem.done}>{elem.text}</TaskLabel>
+      )}
       {elem.canWrite && (
         <Button
           type="button"
@@ -43,4 +51,11 @@ const Task = styled.li`
 const TaskLabel = styled.span`
   text-decoration: ${(props) => (props.$done ? "line-through" : "none")};
   color: ${(props) => (props.$done ? colors.muted : "inherit")};
+`;
+
+const Original = styled.span`
+  display: block;
+  font-size: 0.85em;
+  font-style: italic;
+  color: ${colors.muted};
 `;

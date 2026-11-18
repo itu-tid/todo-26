@@ -27,3 +27,6 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+# b4a's link to the Back4App app (only the app ID, public anyway): commit it, despite *.local above
+!backend/.parse.local
