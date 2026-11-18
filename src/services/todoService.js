@@ -16,6 +16,7 @@ function toTodo(item) {
   return {
     id: item.id,
     text: item.get("text"),
+    textDanish: item.get("textDanish"), // set by the server's beforeSave, not by the app
     done: item.get("done"),
     canWrite: canWrite(item),
   };

@@ -1,0 +1,96 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "Cloud Code: validation and Danish translation on the server",
+  "description": "The changes on feature/cloud-code, in the order a request travels: the server code, its secret, the tooling around it, then the app.",
+  "isPrimary": true,
+  "steps": [
+    {
+      "title": "What this branch does",
+      "description": "## What this branch does\n\n1. A `backend/` folder, next to `src/`, holds the code that runs on **Back4App's server** (`cloud/main.js`).\n2. A `beforeSave` trigger on `TodoItem` **refuses** empty or overlong texts, and **translates** every new or edited to-do to Danish with DeepL.\n3. The DeepL key is an **environment variable on the server** (`DEEPL_KEY`), set in the dashboard: it is in no file at all.\n4. `npm run deploy:backend` deploys it, next to `npm run deploy` for the app.\n5. The app shows the Danish text large and the original small.\n\nTwo changes are **not in the diff**, both made by hand in the dashboard:\n- a `textDanish` column (String) on `TodoItem`, because the class does not allow clients to add fields;\n- the `DEEPL_KEY` environment variable (App Settings → Environment Variables).\n\nThe tour follows a request: server first, then tooling, then the app."
+    },
+    {
+      "file": "backend/cloud/main.js",
+      "line": 1,
+      "title": "backend/: code that never ships to the phone",
+      "description": "## `backend/cloud/main.js`\n\n`backend/` is our name; `cloud/` and `main.js` are Back4App's and are fixed: the server loads `cloud/main.js` and nothing else.\n\nBecause it is outside `src/`, Vite never bundles it.\n\n**Review:** does the comment tell a teammate both ways to deploy?"
+    },
+    {
+      "file": "backend/cloud/main.js",
+      "line": 7,
+      "title": "The secret comes from the server's environment",
+      "description": "## `process.env.DEEPL_KEY`\n\nThe key is not in `main.js`, which is public on GitHub, nor in any file of the repository. It is set on the server, in the dashboard (**App Settings → Environment Variables → Add variable**), and Node exposes it as `process.env`.\n\nThe comment above names the variable, so a teammate knows which one to set: the repository says *which* secrets exist, never *what* they are.\n\nIf it is not set, `DEEPL_KEY` is `undefined` and only the translation fails (next steps); validation keeps working."
+    },
+    {
+      "file": "backend/cloud/main.js",
+      "line": 11,
+      "title": "One beforeSave per class",
+      "description": "## `beforeSave(\"TodoItem\")`\n\nParse keeps **one** `beforeSave` per class: registering a second silently replaces the first. So validation and translation share this function, in numbered steps.\n\nIt runs for **every** save of a `TodoItem`, from any client, which is the whole point."
+    },
+    {
+      "file": "backend/cloud/main.js",
+      "line": 16,
+      "title": "1. Validation: the server's copy of the form's rule",
+      "description": "## Refuse what the form would refuse\n\nThe form already prevents an empty to-do; this makes the rule hold for requests that do not come from our form.\n\nA thrown `Parse.Error` cancels the save, and its message reaches the app's `catch`, today an `alert`.\n\n**Review:** the form has no 200-character limit yet, so the user only learns about it after pressing Add. Add a `maxLength` to the input?"
+    },
+    {
+      "file": "backend/cloud/main.js",
+      "line": 25,
+      "title": "2. Translate only when the text changed",
+      "description": "## `todo.dirty(\"text\")`\n\nTicking a to-do off is also a save of `TodoItem`. Without this line every tick would call DeepL and use up the quota for nothing.\n\n`dirty` is true for a new object and for an edit of `text`; false when only `done` changed."
+    },
+    {
+      "file": "backend/cloud/main.js",
+      "line": 27,
+      "title": "A failed translation does not cost the to-do",
+      "description": "## `try` / `catch` around the translation\n\nIf DeepL is down, the key is wrong, or the quota is used up, the to-do is still saved, just without `textDanish`. The error goes to the server log: dashboard, **Logs → System** (`b4a logs` does not show it).\n\nThe opposite policy, refusing the save, would make our app depend on DeepL being up.\n\n**Review, open points:**\n- A client can still **write `textDanish` itself** (it is now a normal column). If only the server should set it, drop a client's value here unless `request.master`.\n- To-dos that existed before this deploy have no translation until edited."
+    },
+    {
+      "file": "backend/cloud/main.js",
+      "line": 36,
+      "title": "No key, no call",
+      "description": "## Inside `translateToDanish`\n\nA missing `DEEPL_KEY` throws here, with a message that says what to fix. The trigger's `catch` logs it, and the to-do is saved untranslated.\n\nThis happens at call time, not load time: a missing key cannot stop the whole cloud code from loading.\n\nThe host is DeepL's **free** plan, `api-free.deepl.com`, where keys ending in `:fx` work. A paid key would need `api.deepl.com`."
+    },
+    {
+      "file": "backend/cloud/main.js",
+      "line": 40,
+      "title": "The call itself",
+      "description": "## `translateToDanish`\n\nThe key travels in a header (`DeepL-Auth-Key ...`), not in the URL, so it does not end up in anyone's access logs.\n\n`!response.ok` turns an HTTP error into a thrown error, which the `catch` in the trigger handles. Without it, a 403 would fail later with a confusing `translations is undefined`.\n\n**Review:** `\"DA\"` is hard-coded. Fine for the demo; a per-user language would be a field on `_User`."
+    },
+    {
+      "file": ".gitignore",
+      "line": 31,
+      "title": "b4a's link to the app is committed",
+      "description": "## `!backend/.parse.local`\n\nBoth files `b4a new` wrote are committed, so a fresh clone can `npm run deploy:backend` straight away:\n\n- `.parse.local`: the app ID, which every visitor already has in the app's bundle. Vite's `*.local` rule would ignore it, hence the exception.\n- `.parse.project`: project type and SDK version. The **email** `b4a new` wrote into it was removed by hand; `b4a` works without it.\n\n**Review:** after the next deploy, check that `b4a` did not write the email back into `.parse.project` before committing.\n\nNo secret is anywhere on disk: `DEEPL_KEY` lives in the server's environment."
+    },
+    {
+      "file": "package.json",
+      "line": 12,
+      "title": "npm run deploy:backend",
+      "description": "## `deploy:backend`\n\nNext to `deploy` (the app, to GitHub Pages): the colon is npm's convention for a family of scripts.\n\nEvery run **replaces** the code on the server, whoever runs it and from whichever branch. Deploy from `main`, after the PR is merged.\n\nAfter a deploy the server restarts for about a minute, and the browser may report that as a CORS error."
+    },
+    {
+      "file": "eslint.config.js",
+      "line": 24,
+      "title": "ESLint: backend/ is server code",
+      "description": "## A second block for `backend/**`\n\nWithout it, `npm run lint` reports `Parse` and `require` as undefined, because the first block assumes browser globals for every `.js` file.\n\n(`npm run lint` still reports 4 old `process` errors in `src/playground/test.js`; not from this branch.)"
+    },
+    {
+      "file": "src/services/todoService.js",
+      "line": 19,
+      "title": "The app reads the field the server wrote",
+      "description": "## `textDanish` in `toTodo`\n\nThe app never sets `textDanish`; it only reads it. Because Parse returns fields changed by `beforeSave` in the save response, a new to-do arrives already translated, with no second request."
+    },
+    {
+      "file": "src/components/ToDoList/ToDoItem.jsx",
+      "line": 16,
+      "title": "Danish first, original small",
+      "description": "## Two ways to show a to-do\n\n- **Translated:** Danish as the main line (`lang=\"da\"`, so screen readers read it as Danish), original below in small muted italics.\n- **Not translated:** older to-dos, or a failed translation: the text as before.\n\nThe strike-through for a done to-do covers both lines.\n\n**Review:** both branches repeat `<TaskLabel $done=...>`. Worth collapsing into one, with the Danish line optional?"
+    },
+    {
+      "file": "src/components/ToDoList/ToDoItem.jsx",
+      "line": 56,
+      "title": "End of the tour",
+      "description": "## Before the PR\n\n- [x] `textDanish` column exists on `TodoItem` (dashboard), schema still locked\n- [x] `DEEPL_KEY` set in App Settings → Environment Variables, and **saved**\n- [ ] after deploying, `api_keys.js` is gone from the dashboard's Cloud Code tree\n- [ ] `.parse.project` has no email (deploy may write it back)\n- [ ] decide: may a client write `textDanish`? (the try/catch step)\n- [ ] add a to-do, tick it off: one DeepL call, not two (check Logs → System in the dashboard)\n\nThe tour file itself (`.tours/cloud-code.tour`): commit it with the PR, or delete it after reviewing."
+    }
+  ]
+}
