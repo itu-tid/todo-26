@@ -48,7 +48,7 @@
       "file": "backend/cloud/main.js",
       "line": 36,
       "title": "No key, no call",
-      "description": "## Inside `translateToDanish`\n\nA missing `DEEPL_KEY` throws here, with a message that says what to fix. The trigger's `catch` logs it, and the to-do is saved untranslated.\n\nThis happens at call time, not load time: a missing key cannot stop the whole cloud code from loading.\n\nThe host is DeepL's **free** plan, `api-free.deepl.com`, where keys ending in `:fx` work. A paid key would need `api.deepl.com`."
+      "description": "## Inside `translateToDanish`\n\nA missing `DEEPL_KEY` throws here, with a message that says what to fix. The trigger's `catch` logs it, and the to-do is saved untranslated.\n\nThis happens at call time, not load time: a missing key cannot stop the whole cloud code from loading.\n\nThe host depends on the key: free keys end in `:fx` and only work on `api-free.deepl.com`; paid keys only on `api.deepl.com`. The code picks it from the key, so swapping keys needs no code change."
     },
     {
       "file": "backend/cloud/main.js",
