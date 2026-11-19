@@ -4,7 +4,8 @@
 // Secrets are set on the server, never in the repository. In the Back4App
 // dashboard: App Settings → Environment Variables → Add variable,
 // with Key DEEPL_KEY and your DeepL key as the Value, then Save changes.
-const DEEPL_KEY = process.env.DEEPL_KEY;
+// trim: a key pasted into the dashboard can carry an invisible space or line break
+const DEEPL_KEY = process.env.DEEPL_KEY?.trim();
 
 // Parse keeps one beforeSave per class, so everything that must happen
 // before a TodoItem is saved goes in this one function.
@@ -47,7 +48,7 @@ async function translateToDanish(text) {
     body: JSON.stringify({ text: [text], target_lang: "DA" }),
   });
   if (!response.ok) {
-    throw new Error(`DeepL answered ${response.status}`);
+    throw new Error(`DeepL answered ${response.status}: ${await response.text()}`);
   }
   const { translations } = await response.json();
   return translations[0].text;
