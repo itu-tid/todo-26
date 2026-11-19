@@ -48,7 +48,9 @@ async function translateToDanish(text) {
     body: JSON.stringify({ text: [text], target_lang: "DA" }),
   });
   if (!response.ok) {
-    throw new Error(`DeepL answered ${response.status}: ${await response.text()}`);
+    // the key's shape, never the key: its length (36 for a paid key, 39 with ":fx") and its end
+    const shape = `host ${host}, key length ${DEEPL_KEY.length}, ending "${DEEPL_KEY.slice(-4)}"`;
+    throw new Error(`DeepL answered ${response.status} (${shape}): ${await response.text()}`);
   }
   const { translations } = await response.json();
   return translations[0].text;
