@@ -11,6 +11,7 @@ import colors from "../colors.js";
 export default function Home({
   lists,
   memberships,
+  loadFailed,
   onAddList,
   onShare,
   onLeave,
@@ -26,7 +27,8 @@ export default function Home({
 
       <Section>
         <SectionTitle>My lists</SectionTitle>
-        {lists.length === 0 && <Muted>No lists yet.</Muted>}
+        {loadFailed && <Muted>Could not reach the server.</Muted>}
+        {!loadFailed && lists.length === 0 && <Muted>No lists yet.</Muted>}
         {lists.map((list) => (
           <MyListRow
             key={list.id}
